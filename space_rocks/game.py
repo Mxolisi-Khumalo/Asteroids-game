@@ -1,6 +1,6 @@
 import pygame
 
-from models import GameObject
+from models import Spaceship
 from utils import load_sprite
 
 class SpaceRocks:
@@ -9,8 +9,7 @@ class SpaceRocks:
         self.screen = pygame.display.set_mode((800, 600))
         self.background = load_sprite("space", False)
         self.clock = pygame.time.Clock()
-        self.spaceship = GameObject((400, 300), load_sprite("spaceship"), (0, 0))
-        self.asteroid = GameObject((400, 300), load_sprite("asteroid"), (1, 0))
+        self.spaceship = Spaceship((400, 300))
         
     def main_loop(self):
         while True:
@@ -26,16 +25,22 @@ class SpaceRocks:
         for event in pygame.event.get():
             if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
                 quit()
-        pass
+        is_key_pressed = pygame.key.get_pressed()
+        
+        if is_key_pressed[pygame.K_RIGHT]:
+            self.spaceship.rotate(clockwise=True)
+        elif is_key_pressed[pygame.K_LEFT]:
+            self.spaceship.rotate(clockwise=False)
+
+        if is_key_pressed[pygame.K_UP]:
+            self.spaceship.accelerate()
 
     def _process_game_logic(self):
-        self.spaceship.move()
-        self.asteroid.move()
+        self.spaceship.move(self.screen)
 
     def _draw(self):
         self.screen.blit(self.background, (0, 0))
         self.spaceship.draw(self.screen)
-        self.asteroid.draw(self.screen)
         pygame.display.flip()
         #print("Collides:", self.spaceship.collides_with(self.asteroid))
         self.clock.tick(60)
