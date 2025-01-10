@@ -27,7 +27,10 @@ class GameObject:
 class Spaceship(GameObject):
     MANEUVERABILITY = 3
     ACCELERATION = 0.25
-    def __init__(self, position):
+    BULLET_SPEED = 4
+
+    def __init__(self, position, create_bullet_callback):
+        self.create_bullet_callback = create_bullet_callback
         self.direction = Vector2(UP)
         super().__init__(position, load_sprite("spaceship"), Vector2(0))
 
@@ -46,6 +49,18 @@ class Spaceship(GameObject):
         blit_position = self.position - rotated_surface_size * 0.5
         surface.blit(rotated_surface, blit_position)
 
+    def shoot(self):
+        bullet_velocity = self.direction * self.BULLET_SPEED + self.velocity
+        bullet = Bullet(self.position, bullet_velocity)
+        self.create_bullet_callback(bullet)
+
 class Asteroid(GameObject):
     def __init__(self, position):
         super().__init__(position, load_sprite("asteroid"), get_random_velocity(1, 3))
+
+class Bullet(GameObject):
+    def __init__(self, position, velocity):
+        super().__init__(position, load_sprite("bullet"), velocity)
+
+    def move(self, surface):
+        self.position = self.position + self.velocity
