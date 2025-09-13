@@ -1,18 +1,68 @@
-# Asteroids-game
-The asteroids game made with python using the pygame module
-The game you’ll be making is a clone of the classic arcade game Asteroids. In it, you control a spaceship and shoot asteroids. If your spaceship collides with an asteroid, you lose. If you shoot down all asteroids, you win!
+Asteroids Game (Python + Pygame)
+A clone of the classic Asteroids arcade game, built using Python and the Pygame library.
+Control a spaceship, dodge and destroy asteroids, and survive for victory!
 
-Project Overview
-Your Asteroids game in Python will feature a single spaceship. The spaceship can rotate left and right as well as accelerate forward. When it’s not accelerating, it will continue moving with the velocity it had. The spaceship can also shoot bullets.
-The game will use the following key mappings:
+Game Overview
+In this game, you’ll pilot a spaceship and battle against drifting asteroids in space:
+Spaceship Controls:
+- ⬅️ Left Arrow – Rotate left
+- ➡️ Right Arrow – Rotate right
+- ⬆️ Up Arrow – Accelerate forward
+- Spacebar – Shoot bullets
+- Escape – Quit the game
 
-Key                     Action
-Right Arrow             Rotate the spaceship right
-Left Arrow              Rotate the spaceship left
-Up Arrow                Acccelerate the spaceship forward
-Space Button            Shoot
-Escape Button           Exit the game
+Gameplay Mechanics:
+- Your spaceship continues to move forward when not accelerating, based on its current velocity.
+- Large asteroids split into 2 medium ones when shot.
+- Medium asteroids split into 2 smaller ones when shot.
+- Small asteroids are destroyed when hit.
+- If your spaceship collides with an asteroid → Game Over (Defeat)
+- Destroy all asteroids → Victory!
 
-There will also be big asteroids in the game. When a bullet hits a big asteroid, it will split into two medium ones. When a bullet hits a medium asteroid, it will split into two small ones. A small asteroid won’t split but will be destroyed by a bullet.
+Project Structure
+Asteroids-game/
+│── models/ # Classes for Spaceship, Asteroid, Bullet, etc.
+│── utils/ # Helper functions (e.g., sprite loading, random positions)
+│── assets/ # Game images & sounds
+│── main.py # Game entry point (SpaceRocks class)
+│── requirements.txt # Dependencies (pygame)
+│── README.md # Project documentation
 
-When an asteroid collides with the spaceship, the spaceship will be destroyed, and the game will end in a defeat. When all asteroids are gone, the game will end in a victory!
+Installation & Setup 
+1. Clone the repository ```bash git clone https://github.com/your-username/Asteroids-game.git cd Asteroids-game
+2. Create a virtual environment (optional)
+  bash
+  python -m venv venv source venv/bin/activate # macOS/Linux venv\Scripts\activate # Windows
+3. Install requirements
+  bash
+  pip install -r requirements.txt
+4. Run the game
+  bash
+  python main.py
+
+Requirements
+The game is built with:
+pygame==2.0.0
+
+How It Works (Game Loop)
+A typical Pygame program runs in a loop that cycles through:
+1. Handle Input – Player controls (keyboard, quit events).
+2. Process Game Logic – Physics, collisions, asteroid splitting, game state.
+3. Draw Game Elements – Rendering the spaceship, asteroids, and bullets.
+
+python
+initialize_pygame() 
+while True: # Main game loop 
+  handle_input() # Player actions 
+  process_game_logic() # Collisions & rules 
+  draw_game_elements() # Render everything
+  
+Future Improvements
+- Add sound effects & explosion animations
+- Score tracking system
+- Multiple lives and extra levels
+- Improved spaceship acceleration and physics
+
+Credits
+- Developed using Python 3 and Pygame.
+- Inspired by the classic Asteroids (1979) arcade game.
