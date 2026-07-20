@@ -339,11 +339,12 @@ class PlayScene:
         if asteroid not in self.asteroids:
             return
         self.asteroids.remove(asteroid)
-        color = {3: cfg.WHITE, 2: cfg.BLUE, 1: cfg.PURPLE}[asteroid.size]
-        self.particles.explosion(asteroid.position, color,
+        self.particles.explosion(asteroid.position, (205, 185, 155),
                                  count=10 + asteroid.size * 6,
                                  speed=140 + asteroid.size * 40,
                                  size=asteroid.size + 1)
+        self.particles.spark(asteroid.position, cfg.ORANGE,
+                             count=4 + asteroid.size * 2, speed=180)
         self.audio.play(f"explode_{asteroid.size}", 0.6)
         self.add_shake(2 + asteroid.size * 1.5)
         if award:
@@ -379,9 +380,9 @@ class PlayScene:
     def _kill_ship(self):
         if not self.ship:
             return
-        self.particles.explosion(self.ship.position, cfg.CYAN, count=40,
+        self.particles.explosion(self.ship.position, cfg.ORANGE, count=40,
                                  speed=320, size=4, life=1.0)
-        self.particles.ring(self.ship.position, cfg.WHITE, count=24, speed=260)
+        self.particles.ring(self.ship.position, cfg.YELLOW, count=24, speed=260)
         self.audio.play("explode_3", 0.8)
         self.add_shake(20)
         self.ship = None

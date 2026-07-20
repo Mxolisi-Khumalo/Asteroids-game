@@ -1,18 +1,25 @@
 # SPACE ROCKS — a neon Asteroids remix (Python + Pygame)
 
 A modernised take on the classic 1979 *Asteroids* arcade game, built with Python
-and **pygame-ce**. Everything is drawn procedurally as glowing neon vectors —
-no image assets required — with particle explosions, screen shake, an animated
-starfield, power-ups, a hunting UFO, combo scoring, and three game modes.
+and **pygame-ce**. Features realistic, procedurally-generated art — a shaded
+metallic ship, an alien enemy fighter, 3D-lit cratered rock asteroids, and a
+deep-space background with a dense starfield, a planet and a moon — plus
+particle explosions, screen shake, power-ups, a hunting UFO, combo scoring,
+and three game modes.
 
-![menu](assets/sprites/space.png)
+![background](assets/sprites/background.png)
 
 ## Features
 
-- **Neon vector graphics** — procedurally rendered ship, jagged asteroids,
-  bullets, UFO and power-ups with additive glow.
-- **Juice** — particle explosions and thrust, screen shake, ship blink on
-  respawn, twinkling parallax starfield with a soft nebula backdrop.
+- **Realistic procedural art** — sprites are generated at runtime (with numpy
+  lighting) and baked to `assets/sprites/`:
+  - a shaded metallic interceptor with cockpit, wings and engine exhaust
+  - a menacing alien enemy fighter
+  - 3D-lit, cratered rock asteroids (four variants, three sizes)
+  - a deep-space backdrop: dark gradient, multi-coloured starfield, a banded
+    planet, a moon and a faint nebula
+- **Juice** — particle explosions (rock dust + embers), thrust exhaust, screen
+  shake, ship blink on respawn, drifting foreground stars.
 - **Three game modes**
   - **Classic** — clear every wave; each wave adds more, faster rocks. 3 lives.
   - **Survival** — endless rocks with steadily rising pressure. 3 lives.
@@ -56,6 +63,27 @@ python space_rocks/__main__.py
 
 Requires Python 3.10+ (developed and tested on Python 3.14).
 
+On first launch the game generates its sprites into `assets/sprites/` (this
+takes a moment); subsequent launches load the cached PNGs.
+
+## Custom art
+
+Every sprite is a plain PNG in `assets/sprites/`, so you can replace any of them
+with your own art and the game will use yours automatically:
+
+| File | What it is |
+| --- | --- |
+| `ship.png` | player ship (nose pointing up) |
+| `enemy.png` | enemy fighter (nose pointing down) |
+| `asteroid_0.png` … `asteroid_3.png` | asteroid variants |
+| `background.png` | full-screen space backdrop (960×720) |
+
+To rebuild the default generated art at any time:
+
+```bash
+python space_rocks/__main__.py --regen-art
+```
+
 ## Project structure
 
 ```
@@ -65,12 +93,14 @@ Asteroids-game/
 │   ├── game.py         # window, scene state machine, the three modes
 │   ├── settings.py     # tunables, colours, paths
 │   ├── entities.py     # Ship, Asteroid, Bullet, PowerUp, UFO
+│   ├── art.py          # procedural sprite generation (numpy shading)
+│   ├── sprites.py      # bake / load / cache sprites (user art overrides)
 │   ├── particles.py    # additive particle system
-│   ├── starfield.py    # animated background
+│   ├── starfield.py    # deep-space background + drifting stars
 │   ├── hud.py          # HUD + text rendering
 │   ├── audio.py        # procedural sound effects (numpy)
 │   ├── highscores.py   # per-mode high score persistence
-│   └── utils.py        # geometry + procedural neon rendering
+│   └── utils.py        # geometry + rendering helpers
 ├── requirements.txt
 ├── run.bat
 └── highscores.json     # created on first game over

@@ -11,9 +11,9 @@ from pygame import Vector2
 from pygame.transform import rotozoom
 
 import settings as cfg
+import sprites
 from utils import (UP, wrap_position, random_velocity, clamp,
-                   render_neon_polygon, radial_glow, draw_neon_line,
-                   make_asteroid_points, make_ship_points, make_ufo_points)
+                   render_neon_polygon, radial_glow, draw_neon_line)
 
 
 class GameObject:
@@ -46,11 +46,11 @@ class Bullet(GameObject):
         self.lifetime = cfg.BULLET_LIFETIME
         if enemy:
             if Bullet._enemy_sprite is None:
-                Bullet._enemy_sprite = radial_glow(8, cfg.RED)
+                Bullet._enemy_sprite = radial_glow(9, (255, 90, 70))
             sprite = Bullet._enemy_sprite
         else:
             if Bullet._sprite is None:
-                Bullet._sprite = radial_glow(7, cfg.CYAN)
+                Bullet._sprite = radial_glow(7, (255, 235, 160))
             sprite = Bullet._sprite
         super().__init__(position, sprite, velocity, 3)
 
@@ -88,9 +88,8 @@ class Ship(GameObject):
         self.invuln = cfg.SHIP_INVULN_TIME
         self.thrusting = False
         self.blink = 0.0
-        sprite = render_neon_polygon(make_ship_points(), cfg.CYAN,
-                                     glow_color=cfg.CYAN, width=2, fill_alpha=30)
-        super().__init__(position, sprite, Vector2(0), cfg.SHIP_RADIUS)
+        super().__init__(position, sprites.get_ship(), Vector2(0),
+                         cfg.SHIP_RADIUS)
 
     @property
     def invulnerable(self):
@@ -171,12 +170,18 @@ class Ship(GameObject):
         surface.blit(rotated, rect)
 
         if self.thrusting:
-            tail = self.position - self.direction * 12
-            flame = tail - self.direction * random.uniform(8, 18)
+            back = self.sprite.get_height() * 0.42
+            tail = self.position - self.direction * back
+            length = random.uniform(16, 28)
+            tip = tail - self.direction * length
+            ox, oy = offset
             draw_neon_line(surface, cfg.ORANGE,
-                           (tail.x + offset[0], tail.y + offset[1]),
-                           (flame.x + offset[0], flame.y + offset[1]),
-                           width=3, glow=4)
+                           (tail.x + ox, tail.y + oy), (tip.x + ox, tip.y + oy),
+                           width=5, glow=6)
+            mid = tail - self.direction * (length * 0.55)
+            draw_neon_line(surface, (255, 245, 200),
+                           (tail.x + ox, tail.y + oy), (mid.x + ox, mid.y + oy),
+                           width=2, glow=2)
         if self.shield:
             self._draw_shield(surface, offset)
         self.thrusting = False
@@ -193,15 +198,15 @@ class Ship(GameObject):
 
 # ---------------------------------------------------------------------------
 class Asteroid(GameObject):
-    def __init__(self, position, size=3, speed_mult=1.0):
+    def __init__(self, position, size=3, speed_mult=1.0, variant=None):
         self.size = size
         radius = cfg.ASTEROID_RADIUS[size]
-        color = {3: cfg.WHITE, 2: cfg.BLUE, 1: cfg.PURPLE}[size]
-        points = make_asteroid_points(radius)
-        sprite = render_neon_polygon(points, color, glow_color=color,
-                                     width=2, fill_alpha=18)
-        self.spin = random.uniform(-60, 60)
-        self.angle = 0.0
+        if variant is None:
+            variant = random.randint(0, sprites.ASTEROID_VARIANTS - 1)
+        self.variant = variant
+        sprite = sprites.get_asteroid(size, variant)
+        self.spin = random.uniform(-45, 45)
+        self.angle = random.uniform(0, 360)
         velocity = random_velocity(cfg.ASTEROID_MIN_SPEED * speed_mult,
                                    cfg.ASTEROID_MAX_SPEED * speed_mult)
         # Smaller rocks move faster.
@@ -222,7 +227,8 @@ class Asteroid(GameObject):
         children = []
         if self.size > 1:
             for _ in range(2):
-                children.append(Asteroid(self.position, self.size - 1, speed_mult))
+                children.append(Asteroid(self.position, self.size - 1,
+                                         speed_mult, self.variant))
         return children
 
     @property
@@ -282,9 +288,9 @@ class UFO(GameObject):
         y = random.uniform(cfg.HEIGHT * 0.15, cfg.HEIGHT * 0.85)
         vx = cfg.UFO_SPEED * (1 if from_left else -1)
         self._wander = random.uniform(0, math.tau)
-        sprite = render_neon_polygon(make_ufo_points(), cfg.RED,
-                                     glow_color=cfg.RED, width=2, fill_alpha=25)
-        super().__init__(Vector2(x, y), sprite, Vector2(vx, 0), 22)
+        sprite = sprites.get_enemy()
+        super().__init__(Vector2(x, y), sprite, Vector2(vx, 0),
+                         sprite.get_width() * 0.42)
         self.score = cfg.UFO_SCORE
 
     def update(self, dt, target=None):
